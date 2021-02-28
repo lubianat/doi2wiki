@@ -4,7 +4,7 @@ source("utils.r")
 ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
-            h3("CSV must have a column named DOI"),
+            h3("CSV must have a column named DOI or PMID"),
             fileInput("file1", "Choose CSV File",
                       accept = c(
                           "text/csv",
@@ -15,10 +15,17 @@ ui <- fluidPage(
             checkboxInput("header", "Header", TRUE),
             
             radioButtons(
+                inputId = "doipmid",
+                label = "DOI or PMID?",
+                choices = c("DOI", "PMID"),
+                selected = "DOI"),
+            
+            radioButtons(
                 inputId = "dropna",
                 label = "Drop NAs?",
                 choices = c("Sure", "Nah"),
                 selected = "Sure"),
+
             downloadButton("download", "Download .tsv")
         ),
         
@@ -36,11 +43,14 @@ server <- function(input, output) {
             return(NULL)
         
         df <- read.csv(inFile$datapath, header = input$header)
-        data <- reconcile_df_to_wikidata(df)
+        
+        
+        id_type <- input$doipmid
+        data <- reconcile_df_to_wikidata(df, id_type)
         
         remove_na <- input$dropna
         if (remove_na == "Sure"){
-            data <- data[!is.na(data$item),] 
+            data <- data[!is.na(data[,"QID"]),] 
             return(data)
         } else {
             return(data)

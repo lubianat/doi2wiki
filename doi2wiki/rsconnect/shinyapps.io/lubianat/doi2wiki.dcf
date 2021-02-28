@@ -1,0 +1,13 @@
+name: doi2wiki
+title: doi2wiki
+username:
+account: lubianat
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3707728
+bundleId: 4278889
+url: https://lubianat.shinyapps.io/doi2wiki/
+when: 1614434347.70808
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: test.csv
