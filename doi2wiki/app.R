@@ -2,6 +2,17 @@ library(shiny)
 source("utils.r")
 
 ui <- fluidPage(
+    
+    
+    windowTitle = "doi2wiki",
+    title = tags$head(tags$link(
+        rel = "icon",
+        href = "https://raw.githubusercontent.com/lubianat/doi2wiki/master/doi2wiki/favicon-32x32.png",
+        type = "image/x-icon"
+    ), ),
+    
+    
+    
     sidebarLayout(
         sidebarPanel(
             h3("CSV must have a column named DOI or PMID"),
