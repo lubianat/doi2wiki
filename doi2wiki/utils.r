@@ -3,6 +3,7 @@ library(dplyr)
 library(httr)
 library(WikidataQueryServiceR)
 
+
 reconcile_df_to_wikidata <- function(df, id_type = "DOI") {
   if (id_type == "PMID") {
     df[, id_type] <- as.character(df[, id_type])

@@ -15,13 +15,11 @@ ui <- fluidPage(
     
     sidebarLayout(
         sidebarPanel(
-            h3("CSV must have a column named DOI or PMID"),
-            fileInput("file1", "Choose CSV File",
-                      accept = c(
-                          "text/csv",
-                          "text/comma-separated-values,text/plain",
-                          ".csv")
-            ),
+
+            p("Paste DOIs, one per row (without prefix; 10.xxx...)"),
+            textAreaInput(inputId = "dois", label="DOIs", height = 180),
+            
+            
             tags$hr(),
             checkboxInput("header", "Header", TRUE),
             
@@ -48,15 +46,21 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
     
-    data <- reactive({
-        inFile <- input$file1
-        if (is.null(inFile))
-            return(NULL)
+    
+    
+    qids <- reactive({
+        dois <- input$dois
+        dois = strsplit(dois, "\n",fixed = TRUE)
         
-        df <- read.csv(inFile$datapath, header = input$header)
+        type <- input$doipmid
         
+        if (type == "DOI"){
+            df <- data.frame(DOI=dois[[1]])
+            } else{
+            df <- data.frame(PMID=dois[[1]])
+        }
+
         
-        id_type <- input$doipmid
         data <- reconcile_df_to_wikidata(df, id_type)
         
         remove_na <- input$dropna
@@ -66,11 +70,12 @@ server <- function(input, output) {
         } else {
             return(data)
         }
-    
+        print(dois)
+        
     })
     
     output$preview <- renderTable({
-        head(data())
+        head(qids())
     })
     
     output$download <- downloadHandler(
@@ -78,7 +83,7 @@ server <- function(input, output) {
             paste0("result.tsv")
         },
         content = function(file) {
-            vroom::vroom_write(data(), file)
+            vroom::vroom_write(qids(), file)
         }
     )
 }
